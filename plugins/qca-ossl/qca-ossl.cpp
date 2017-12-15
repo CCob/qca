@@ -2821,6 +2821,7 @@ public:
 		QList<PKey::Type> list;
 		list += PKey::RSA;
 		list += PKey::DSA;
+        list += PKey::DH;
 		return list;
 	}
 
@@ -2899,10 +2900,6 @@ public:
 	{
 		EVP_PKEY *pkey = get_pkey();
 
-		// OpenSSL does not have DH import/export support
-		if(pkey->type == EVP_PKEY_DH)
-			return QByteArray();
-
 		BIO *bo = BIO_new(BIO_s_mem());
 		i2d_PUBKEY_bio(bo, pkey);
 		QByteArray buf = bio2ba(bo);
@@ -2912,10 +2909,6 @@ public:
 	virtual QString publicToPEM() const
 	{
 		EVP_PKEY *pkey = get_pkey();
-
-		// OpenSSL does not have DH import/export support
-		if(pkey->type == EVP_PKEY_DH)
-			return QString();
 
 		BIO *bo = BIO_new(BIO_s_mem());
 		PEM_write_bio_PUBKEY(bo, pkey);
